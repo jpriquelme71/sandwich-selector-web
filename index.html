@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elige tu Combo de Sándwich</title>
+    <style>
+        /* Estilos generales para el cuerpo de la página */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Contenedor principal de la aplicación */
+        .app-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Estilos para el encabezado */
+        h1 {
+            color: #3f51b5;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        /* Contenedor del combo */
+        .combo-container {
+            display: flex;
+            flex-direction: column; /* Por defecto, apila en dispositivos pequeños */
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+        }
+        
+        /* Media query para pantallas más grandes, muestra los elementos lado a lado */
+        @media (min-width: 768px) {
+            .combo-container {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        /* Estilos para el menú desplegable */
+        .opciones {
+            text-align: center;
+        }
+        .opciones label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: block;
+            color: #555;
+        }
+        .opciones select {
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+            cursor: pointer;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+        .opciones select:hover {
+            border-color: #3f51b5;
+            background-color: #fff;
+        }
+        .opciones select:focus {
+            outline: none;
+            border-color: #3f51b5;
+            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+        }
+
+        /* Contenedor de la imagen */
+        .imagen-container {
+            flex-shrink: 0;
+            width: 100%;
+            max-width: 350px;
+        }
+        .imagen-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+            display: none; /* La imagen se oculta por defecto */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Contenedor de los ingredientes */
+        .ingredientes-container {
+            width: 100%;
+            max-width: 350px;
+            text-align: left;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fafafa;
+            display: none; /* Se oculta por defecto */
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .ingredientes-container h3 {
+            margin-top: 0;
+            color: #3f51b5;
+            border-bottom: 2px solid #3f51b5;
+            padding-bottom: 10px;
+        }
+
+        .ingredientes-container ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ingredientes-container li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .ingredientes-container li:last-child {
+            border-bottom: none;
+        }
+
+        /* Animación para el cambio de imagen */
+        .imagen-container img:hover {
+            transform: scale(1.03);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <h1>Elige tu Combo de Sándwich</h1>
+        <div class="combo-container">
+            
+            <!-- Menú desplegable para los sándwiches -->
+            <div class="opciones">
+                <label for="sandwich-selector">Selecciona tu sándwich:</label>
+                <select id="sandwich-selector">
+                    <option value="default" selected disabled>--- Elige una opción ---</option>
+                    <option value="pavo">Sándwich de Pavo</option>
+                    <option value="pollo">Sándwich de Pollo</option>
+                    <option value="vegetariano">Sándwich Vegetariano</option>
+                </select>
+            </div>
+
+            <!-- Contenedores para la imagen y los ingredientes -->
+            <div style="display: flex; flex-direction: column; gap: 20px; align-items: center;">
+                <div class="imagen-container">
+                    <img id="sandwich-image" src="" alt="Imagen de un sándwich">
+                </div>
+                <div id="ingredientes-container" class="ingredientes-container">
+                    <h3>Ingredientes:</h3>
+                    <ul id="ingredientes-list"></ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Obtenemos las referencias a los elementos del DOM
+        const selector = document.getElementById('sandwich-selector');
+        const imagen = document.getElementById('sandwich-image');
+        const ingredientesContainer = document.getElementById('ingredientes-container');
+        const ingredientesList = document.getElementById('ingredientes-list');
+        
+        // Creamos un objeto para mapear los datos completos de cada sándwich.
+        // Se incluyen la ruta de la imagen y una lista de ingredientes.
+        const datosSandwiches = {
+            'pavo': {
+                ruta: './imagenes/sandwich-pavo.jpg',
+                ingredientes: ['Pan Hoagie', 'Lechuga', 'Tomate', 'Pavo', 'Queso Provolone', 'Salsa de Arándanos y Mayonesa']
+            },
+            'pollo': {
+                ruta: './imagenes/sandwich-pollo.jpg',
+                ingredientes: ['Pan Brioche', 'Lechuga Romana', 'Tomate', 'Pollo', 'Queso Suizo', 'Salsa de Mayonesa y Pesto']
+            },
+            'vegetariano': {
+                ruta: './imagenes/sandwich-vegetariano.jpg',
+                ingredientes: ['Pan Ciabatta', 'Tomate', 'Pimiento asado', 'Pepino', 'Hummus', 'Queso Mozzarella', 'Aceite de oliva']
+            }
+        };
+        
+        // Agregamos un "escuchador de eventos" al menú desplegable.
+        selector.addEventListener('change', (evento) => {
+            const valorSeleccionado = evento.target.value;
+
+            if (valorSeleccionado !== 'default') {
+                const datos = datosSandwiches[valorSeleccionado];
+                
+                // Actualizamos la imagen
+                imagen.src = datos.ruta;
+                imagen.style.display = 'block';
+
+                // Limpiamos la lista de ingredientes anterior
+                ingredientesList.innerHTML = '';
+                
+                // Recorremos los nuevos ingredientes y los agregamos a la lista
+                datos.ingredientes.forEach(ingrediente => {
+                    const li = document.createElement('li');
+                    li.textContent = ingrediente;
+                    ingredientesList.appendChild(li);
+                });
+
+                // Hacemos visible el contenedor de ingredientes
+                ingredientesContainer.style.display = 'block';
+
+            } else {
+                // Si el usuario vuelve a la opción por defecto, ocultamos todo
+                imagen.style.display = 'none';
+                ingredientesContainer.style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>
